@@ -3,19 +3,18 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "packageManager": "bun@1.0.0",
+  "packageManager": "bun@1.2.19",
   "workspaces": [
-    "apps/web",
-    "apps/api",
-    "apps/meal-plan-engine",
-    "apps/groceries-scraper",
-    "packages/*"
+    "./apps/web"
   ],
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
   },
   "devDependencies": {
     "turbo": "latest",
