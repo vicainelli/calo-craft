@@ -20,5 +20,8 @@
   "devDependencies": {
     "turbo": "latest",
     "bun-types": "latest"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.11"
   }
 }
