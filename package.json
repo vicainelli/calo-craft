@@ -5,7 +5,8 @@
   "type": "module",
   "packageManager": "bun@1.2.19",
   "workspaces": [
-    "./apps/web"
+    "./apps/web",
+    "./apps/api"
   ],
   "scripts": {
     "dev": "turbo run dev",

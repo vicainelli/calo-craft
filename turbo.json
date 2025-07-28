@@ -10,6 +10,7 @@
     },
     "lint": {},
     "dev": {
+      "dependsOn": ["^dev"],
       "cache": false,
       "persistent": true,
       "inputs": [
@@ -28,6 +29,15 @@
           "VITE_*"
       ]
     },
-    "test": {}
+    "test": {
+      "outputLogs": "full",
+      "dependsOn": ["^test"],
+      "inputs": [
+        "apps/api/src/**/*.ts",
+        "apps/api/src/**/*.test.ts",
+        "apps/api/vitest.config.ts",
+        "apps/api/package.json"
+      ]
+    }
   }
 }
