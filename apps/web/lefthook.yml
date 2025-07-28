@@ -1,0 +1,8 @@
+pre-commit:
+  commands:
+    biome-lint:
+      run: bun biome:lint
+    biome-format:
+      run: bun biome:format
+    biome-check:
+      run: bun biome:check
