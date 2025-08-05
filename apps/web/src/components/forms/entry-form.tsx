@@ -3,18 +3,51 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAppForm } from "@/components/ui/tanstack-form";
+import { Textarea } from "@/components/ui/textarea";
 
 const FormSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  daily_calories: z.coerce.number().min(500, {
+    message: "Daily calories should be at least 500.",
+  }),
+  daily_meals: z.coerce
+    .number()
+    .min(1, {
+      message: "You need at least 1 meal per day.",
+    })
+    .max(10, {
+      message: "Maximum 10 meals per day.",
+    }),
+  preferences_and_allergies: z.string().optional(),
+  prefered_stores: z.object({
+    walmart: z.boolean().optional(),
+    kroger: z.boolean().optional(),
+    target: z.boolean().optional(),
+    wholeFoods: z.boolean().optional(),
   }),
 });
 
 export function EntryForm() {
   const form = useAppForm({
-    validators: { onChange: FormSchema },
+    validators: {
+      onChange: (values) => {
+        try {
+          FormSchema.parse(values);
+          return undefined;
+        } catch (error) {
+          return (error as z.ZodError).format();
+        }
+      },
+    },
     defaultValues: {
-      username: "",
+      daily_calories: 2000,
+      daily_meals: 3,
+      preferences_and_allergies: "",
+      prefered_stores: {
+        walmart: false,
+        kroger: false,
+        target: false,
+        wholeFoods: false,
+      },
     },
     onSubmit: ({ value }) => console.log(value),
   });
@@ -31,26 +64,168 @@ export function EntryForm() {
     <form.AppForm>
       <form className="space-y-6" onSubmit={handleSubmit}>
         <form.AppField
-          name="username"
+          name="daily_calories"
           // biome-ignore lint/correctness/noChildrenProp: TODO check this
           children={(field) => (
             <field.FormItem>
-              <field.FormLabel>Username</field.FormLabel>
+              <field.FormLabel>Daily Calories Goal</field.FormLabel>
               <field.FormControl>
                 <Input
-                  placeholder="FatahChan"
+                  type="number"
+                  placeholder="2000"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(Number(e.target.value))}
+                  onBlur={field.handleBlur}
+                />
+              </field.FormControl>
+              <field.FormDescription>
+                Enter your desired daily calorie intake.
+              </field.FormDescription>
+              <field.FormMessage />
+            </field.FormItem>
+          )}
+        />
+
+        <form.AppField
+          name="daily_meals"
+          // biome-ignore lint/correctness/noChildrenProp: TODO check this
+          children={(field) => (
+            <field.FormItem>
+              <field.FormLabel>Number of Meals Per Day</field.FormLabel>
+              <field.FormControl>
+                <Input
+                  type="number"
+                  placeholder="3"
+                  min="1"
+                  max="10"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(Number(e.target.value))}
+                  onBlur={field.handleBlur}
+                />
+              </field.FormControl>
+              <field.FormDescription>
+                How many meals do you want to have per day?
+              </field.FormDescription>
+              <field.FormMessage />
+            </field.FormItem>
+          )}
+        />
+
+        <form.AppField
+          name="preferences_and_allergies"
+          // biome-ignore lint/correctness/noChildrenProp: TODO check this
+          children={(field) => (
+            <field.FormItem>
+              <field.FormLabel>Preferences and Allergies</field.FormLabel>
+              <field.FormControl>
+                <Textarea
+                  placeholder="Enter your dietary preferences and allergies here..."
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
                 />
               </field.FormControl>
               <field.FormDescription>
-                This is your public display name.
+                List any food preferences, allergies, or dietary restrictions.
               </field.FormDescription>
               <field.FormMessage />
             </field.FormItem>
           )}
         />
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium">Preferred Stores</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <form.AppField
+              name="prefered_stores.walmart"
+              // biome-ignore lint/correctness/noChildrenProp: TODO check this
+              children={(field) => (
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="walmart"
+                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    checked={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.checked)}
+                  />
+                  <label
+                    htmlFor="walmart"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Walmart
+                  </label>
+                </div>
+              )}
+            />
+
+            <form.AppField
+              name="prefered_stores.kroger"
+              // biome-ignore lint/correctness/noChildrenProp: TODO check this
+              children={(field) => (
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="kroger"
+                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    checked={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.checked)}
+                  />
+                  <label
+                    htmlFor="kroger"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Kroger
+                  </label>
+                </div>
+              )}
+            />
+
+            <form.AppField
+              name="prefered_stores.target"
+              // biome-ignore lint/correctness/noChildrenProp: TODO check this
+              children={(field) => (
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="target"
+                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    checked={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.checked)}
+                  />
+                  <label
+                    htmlFor="target"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Target
+                  </label>
+                </div>
+              )}
+            />
+
+            <form.AppField
+              name="prefered_stores.wholeFoods"
+              // biome-ignore lint/correctness/noChildrenProp: TODO check this
+              children={(field) => (
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="wholeFoods"
+                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    checked={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.checked)}
+                  />
+                  <label
+                    htmlFor="wholeFoods"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Whole Foods
+                  </label>
+                </div>
+              )}
+            />
+          </div>
+        </div>
+
         <Button type="submit">Submit</Button>
       </form>
     </form.AppForm>
