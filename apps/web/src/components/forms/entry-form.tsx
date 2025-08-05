@@ -2,8 +2,15 @@ import { useCallback } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAppForm } from "@/components/ui/tanstack-form";
 import { Textarea } from "@/components/ui/textarea";
+import { useAppForm } from "@/components/ui/tanstack-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const FormSchema = z.object({
   daily_calories: z.coerce.number().min(500, {
@@ -14,8 +21,8 @@ const FormSchema = z.object({
     .min(1, {
       message: "You need at least 1 meal per day.",
     })
-    .max(10, {
-      message: "Maximum 10 meals per day.",
+    .max(8, {
+      message: "Maximum 8 meals per day.",
     }),
   preferences_and_allergies: z.string().optional(),
   prefered_stores: z.object({
@@ -93,15 +100,22 @@ export function EntryForm() {
             <field.FormItem>
               <field.FormLabel>Number of Meals Per Day</field.FormLabel>
               <field.FormControl>
-                <Input
-                  type="number"
-                  placeholder="3"
-                  min="1"
-                  max="10"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(Number(e.target.value))}
-                  onBlur={field.handleBlur}
-                />
+                <Select
+                  value={field.state.value.toString()}
+                  onValueChange={(value) => field.handleChange(Number(value))}
+                  onOpenChange={() => field.handleBlur()}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select number of meals" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((number) => (
+                      <SelectItem key={number} value={number.toString()}>
+                        {number}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </field.FormControl>
               <field.FormDescription>
                 How many meals do you want to have per day?
@@ -134,7 +148,7 @@ export function EntryForm() {
         />
 
         <div className="space-y-2">
-          <h3 className="text-sm font-medium">Preferred Stores</h3>
+          <h3 className="text-sm font-medium mb-2">Preferred Stores</h3>
           <div className="grid grid-cols-2 gap-4">
             <form.AppField
               name="prefered_stores.walmart"
@@ -150,7 +164,7 @@ export function EntryForm() {
                   />
                   <label
                     htmlFor="walmart"
-                    className="text-sm font-medium text-gray-700"
+                    className="text-sm font-medium text-gray-900 dark:text-gray-100"
                   >
                     Walmart
                   </label>
@@ -172,7 +186,7 @@ export function EntryForm() {
                   />
                   <label
                     htmlFor="kroger"
-                    className="text-sm font-medium text-gray-700"
+                    className="text-sm font-medium text-gray-900 dark:text-gray-100"
                   >
                     Kroger
                   </label>
@@ -194,7 +208,7 @@ export function EntryForm() {
                   />
                   <label
                     htmlFor="target"
-                    className="text-sm font-medium text-gray-700"
+                    className="text-sm font-medium text-gray-900 dark:text-gray-100"
                   >
                     Target
                   </label>
@@ -216,7 +230,7 @@ export function EntryForm() {
                   />
                   <label
                     htmlFor="wholeFoods"
-                    className="text-sm font-medium text-gray-700"
+                    className="text-sm font-medium text-gray-900 dark:text-gray-100"
                   >
                     Whole Foods
                   </label>
