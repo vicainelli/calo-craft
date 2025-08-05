@@ -21,7 +21,6 @@ const daily_calories = useStore(store, (state) => state.daily_calories);
 
     <p>Let'start</p>
 
-
     <div>
       {daily_calories <= 0 ? (<form onSubmit={setDailyCalories}>
         <div className="flex flex-col gap-2">
