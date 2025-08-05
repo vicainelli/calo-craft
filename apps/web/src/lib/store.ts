@@ -16,8 +16,8 @@ store.subscribe((state) => {
     const zodError = error as z.ZodError;
     console.error("Invalid state data:", state);
     console.error("Store validation error:", zodError.issues);
-		throw new Error(
-		  `Store validation failed: ${zodError.issues.map((e) => e.message).join(', ')}`
-		);
+    throw new Error(
+      `Store validation failed: ${zodError.issues.map((e) => e.message).join(", ")}`,
+    );
   }
 });

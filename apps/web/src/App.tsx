@@ -1,5 +1,6 @@
 // import { z } from 'zod';
-import { Input } from "@/components/ui/input";
+
+import { useForm } from "@tanstack/react-form";
 import {
   Form,
   FormControl,
@@ -8,8 +9,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { useForm } from '@tanstack/react-form'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 // const FormSchema = z.object({
 //   daily_calories: z.number()
@@ -20,7 +21,6 @@ import { useForm } from '@tanstack/react-form'
 // });
 
 export function App() {
-
   const form = useForm({
     defaultValues: {
       daily_calories: undefined,
@@ -40,11 +40,13 @@ export function App() {
 
       <div>
         <Form {...form}>
-          <form onSubmit={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            form.handleSubmit()
-          }}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit();
+            }}
+          >
             <FormField
               control={form.control}
               name="daily_calories"
@@ -52,13 +54,11 @@ export function App() {
                 <FormItem>
                   <FormLabel>Amount of calories per day</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="1400"
-                      {...field}
-                    />
+                    <Input type="number" placeholder="1400" {...field} />
                   </FormControl>
-                  <FormDescription>How many calories do you want to consume per day?</FormDescription>
+                  <FormDescription>
+                    How many calories do you want to consume per day?
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
