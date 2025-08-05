@@ -1,5 +1,5 @@
 import { Store } from "@tanstack/react-store";
-import { z } from "zod"
+import { z } from "zod";
 
 const storeSchema = z.object({
   daily_calories: z.number().int().min(0).default(0),
@@ -14,8 +14,10 @@ store.subscribe((state) => {
     storeSchema.parse(state);
   } catch (error: unknown) {
     const zodError = error as z.ZodError;
-    console.error('Invalid state data:', state);
+    console.error("Invalid state data:", state);
     console.error("Store validation error:", zodError.issues);
-		throw new Error(`Store validation failed: ${zodError.issues.map((e) => e.message).join(', ')}`);
+		throw new Error(
+		  `Store validation failed: ${zodError.issues.map((e) => e.message).join(', ')}`
+		);
   }
 });

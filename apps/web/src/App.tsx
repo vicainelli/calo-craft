@@ -1,14 +1,5 @@
-import { z } from 'zod';
-import { useForm } from '@tanstack/react-form'
-import { Button } from "@/components/ui/button";
+// import { z } from 'zod';
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Form,
   FormControl,
@@ -18,55 +9,62 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Textarea } from "@/components/ui/textarea";
+import { useForm } from '@tanstack/react-form'
+
+// const FormSchema = z.object({
+//   daily_calories: z.number()
+//     .min(1000, { message: "Calories must be at least 1000" })
+//     .max(5000, { message: "Calories must be at most 5000" })
+//     .optional(),
+//   daily_meals: z.string().optional(),
+// });
 
 export function App() {
+
+  const form = useForm({
+    defaultValues: {
+      daily_calories: undefined,
+      daily_meals: "3",
+    },
+    // validate: FormSchema,
+    onSubmit: async (values) => {
+      console.log(values.value);
+    },
+  });
+
   return (
     <div className="border p-8">
       <h1 className="text-3xl font-bold text-gray-600">CaloCraft</h1>
 
-      <p>Let'start</p>
+      <p>Let's start</p>
 
       <div>
-        <form>
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col gap-1">
-              <label htmlFor="daily_calories">Amount of calories per day</label>
-              <Input
-                type="number"
-                name="daily_calories"
-                id="daily_calories"
-                placeholder="1400"
-              />
-            </div>
-            <div>
-              <label htmlFor="daily_meals">Daily meals</label>
-              <Select name="daily_meals">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Daily meals" />
-                </SelectTrigger>
-                <SelectContent id="daily_meals">
-                  <SelectItem value="1">1</SelectItem>
-                  <SelectItem value="2">2</SelectItem>
-                  <SelectItem value="3">3</SelectItem>
-                  <SelectItem value="4">4</SelectItem>
-                  <SelectItem value="5">5</SelectItem>
-                  <SelectItem value="6">6</SelectItem>
-                  <SelectItem value="7">7</SelectItem>
-                  <SelectItem value="8">8</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label htmlFor="preferences_and_allergies">Preferences and allergies</label>
-              <Textarea id="preferences_and_allergies"></Textarea>
-              <p className="text-sm">Describe as much as possible your food preferences, restrictions, and allergies</p>
-            </div>
-            <div>
-              <Button type="submit">confirm</Button>
-            </div>
-          </div>
-        </form>
+        <Form {...form}>
+          <form onSubmit={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            form.handleSubmit()
+          }}>
+            <FormField
+              control={form.control}
+              name="daily_calories"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount of calories per day</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="1400"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>How many calories do you want to consume per day?</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
       </div>
     </div>
   );
