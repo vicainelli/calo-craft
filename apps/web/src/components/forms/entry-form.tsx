@@ -1,9 +1,6 @@
-import { useCallback } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useAppForm } from "@/components/ui/tanstack-form";
 import {
   Select,
   SelectContent,
@@ -11,6 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAppForm } from "@/components/ui/tanstack-form";
+import { Textarea } from "@/components/ui/textarea";
 
 const FormSchema = z.object({
   daily_calories: z.coerce.number().min(500, {
@@ -25,13 +24,19 @@ const FormSchema = z.object({
       message: "Maximum 8 meals per day.",
     }),
   preferences_and_allergies: z.string().optional(),
-  prefered_stores: z.object({
-    walmart: z.boolean().optional(),
-    kroger: z.boolean().optional(),
-    target: z.boolean().optional(),
-    wholeFoods: z.boolean().optional(),
-  }),
+  preferred_stores: z.array(z.string()).optional(),
 });
+
+// TODO get these from a config API, based on the user location
+const PREFERED_STORES = [
+  { name: "Albert Heijn", value: "albert_heijn" },
+  { name: "Jumbo", value: "jumbo" },
+  { name: "Lidl", value: "lidl" },
+  { name: "Plus", value: "plus" },
+  { name: "Dirk", value: "dirk" },
+  { name: "Coop", value: "coop" },
+  { name: "Spar", value: "spar" },
+];
 
 export function EntryForm() {
   const form = useAppForm({
@@ -49,24 +54,17 @@ export function EntryForm() {
       daily_calories: 2000,
       daily_meals: 3,
       preferences_and_allergies: "",
-      prefered_stores: {
-        walmart: false,
-        kroger: false,
-        target: false,
-        wholeFoods: false,
-      },
+      preferred_stores: [],
     },
     onSubmit: ({ value }) => console.log(value),
   });
 
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      form.handleSubmit();
-    },
-    [form],
-  );
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    form.handleSubmit();
+  };
+
   return (
     <form.AppForm>
       <form className="space-y-6" onSubmit={handleSubmit}>
@@ -149,92 +147,44 @@ export function EntryForm() {
 
         <div className="space-y-2">
           <h3 className="text-sm font-medium mb-2">Preferred Stores</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <form.AppField
-              name="prefered_stores.walmart"
+              name="preferred_stores"
               // biome-ignore lint/correctness/noChildrenProp: TODO check this
               children={(field) => (
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="walmart"
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    checked={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.checked)}
-                  />
-                  <label
-                    htmlFor="walmart"
-                    className="text-sm font-medium text-gray-900 dark:text-gray-100"
-                  >
-                    Walmart
-                  </label>
-                </div>
-              )}
-            />
-
-            <form.AppField
-              name="prefered_stores.kroger"
-              // biome-ignore lint/correctness/noChildrenProp: TODO check this
-              children={(field) => (
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="kroger"
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    checked={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.checked)}
-                  />
-                  <label
-                    htmlFor="kroger"
-                    className="text-sm font-medium text-gray-900 dark:text-gray-100"
-                  >
-                    Kroger
-                  </label>
-                </div>
-              )}
-            />
-
-            <form.AppField
-              name="prefered_stores.target"
-              // biome-ignore lint/correctness/noChildrenProp: TODO check this
-              children={(field) => (
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="target"
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    checked={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.checked)}
-                  />
-                  <label
-                    htmlFor="target"
-                    className="text-sm font-medium text-gray-900 dark:text-gray-100"
-                  >
-                    Target
-                  </label>
-                </div>
-              )}
-            />
-
-            <form.AppField
-              name="prefered_stores.wholeFoods"
-              // biome-ignore lint/correctness/noChildrenProp: TODO check this
-              children={(field) => (
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="wholeFoods"
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    checked={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.checked)}
-                  />
-                  <label
-                    htmlFor="wholeFoods"
-                    className="text-sm font-medium text-gray-900 dark:text-gray-100"
-                  >
-                    Whole Foods
-                  </label>
-                </div>
+                <>
+                  {PREFERED_STORES.map((store) => (
+                    <div
+                      key={store.value}
+                      className="flex items-center space-x-2"
+                    >
+                      <input
+                        type="checkbox"
+                        id={store.value}
+                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        checked={
+                          field.state.value?.includes(store.value) || false
+                        }
+                        onChange={(e) => {
+                          const currentValues = field.state.value || [];
+                          if (e.target.checked) {
+                            field.handleChange([...currentValues, store.value]);
+                          } else {
+                            field.handleChange(
+                              currentValues.filter((v) => v !== store.value),
+                            );
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor={store.value}
+                        className="text-sm font-medium text-gray-900 dark:text-gray-100"
+                      >
+                        {store.name}
+                      </label>
+                    </div>
+                  ))}
+                </>
               )}
             />
           </div>
